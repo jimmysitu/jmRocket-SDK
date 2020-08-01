@@ -52,7 +52,7 @@ tests_riscv_out  = $(addsuffix .riscv.out,  $(tests))
 tests_riscv_lst  = $(addsuffix .riscv.lst,  $(tests))
 
 $(tests_riscv_dump): %.riscv.dump: %.riscv
-	$(RISCV_OBJDUMP) $< > $@
+	$(RISCV_OBJDUMP) -S $< > $@
 
 $(tests_riscv_out): %.riscv.out: %.riscv
 	$(RISCV_SIM) $< > $@
