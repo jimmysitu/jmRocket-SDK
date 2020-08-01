@@ -33,9 +33,12 @@ RISCV_SIM ?= spike --isa=rv$(XLEN)gc
 incs  += -I$(src_dir)/../env -I$(src_dir)/common $(addprefix -I$(src_dir)/, $(tests))
 objs  :=
 
+LIST_OPTS ?= -g -Wa,-aslh
 define compile_template
 $(1).riscv: $(wildcard $(src_dir)/$(1)/*) $(wildcard $(src_dir)/common/*)
-	$$(RISCV_GCC) $$(incs) $$(RISCV_GCC_OPTS) -o $$@ $(wildcard $(src_dir)/$(1)/*.c) $(wildcard $(src_dir)/common/*.c) $(wildcard $(src_dir)/common/*.S) $$(RISCV_LINK_OPTS)
+	$$(RISCV_GCC) $$(incs) $$(RISCV_GCC_OPTS) -o $$@ $$(LIST_OPTS) \
+		$(wildcard $(src_dir)/$(1)/*.c) $(wildcard $(src_dir)/common/*.c) \
+		$(wildcard $(src_dir)/common/*.S) $$(RISCV_LINK_OPTS) > $$@.lst
 endef
 
 $(foreach bmark,$(tests),$(eval $(call compile_template,$(bmark))))
@@ -46,6 +49,7 @@ $(foreach bmark,$(tests),$(eval $(call compile_template,$(bmark))))
 tests_riscv_bin  = $(addsuffix .riscv,  $(tests))
 tests_riscv_dump = $(addsuffix .riscv.dump, $(tests))
 tests_riscv_out  = $(addsuffix .riscv.out,  $(tests))
+tests_riscv_lst  = $(addsuffix .riscv.lst,  $(tests))
 
 $(tests_riscv_dump): %.riscv.dump: %.riscv
 	$(RISCV_OBJDUMP) $< > $@
@@ -57,6 +61,7 @@ riscv: $(tests_riscv_dump)
 run: $(tests_riscv_out)
 
 junk += $(tests_riscv_bin) $(tests_riscv_dump) $(tests_riscv_hex) $(tests_riscv_out)
+junk += $(tests_riscv_lst)
 
 #------------------------------------------------------------
 # Default
