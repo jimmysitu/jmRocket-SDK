@@ -8,16 +8,14 @@ XLEN ?= 64
 
 default: all
 
-src_dir = .
+src_dir = ..
 
 #--------------------------------------------------------------------
 # Sources
 #--------------------------------------------------------------------
 
 tests = \
-	uart \
-	leds \
-	dhrystone \
+	gcov-test \
 
 #--------------------------------------------------------------------
 # Build rules
@@ -36,6 +34,11 @@ incs  += -I$(src_dir)/../env -I$(src_dir)/common $(addprefix -I$(src_dir)/, $(te
 objs  :=
 
 LIST_OPTS ?= -g -Wa,-aslh
+
+GCOV_OPTS ?= -fprofile-arcs -ftest-coverage
+RISCV_GCC_OPTS  += $(GCOV_OPTS)
+RISCV_LINK_OPTS += $(GCOV_OPTS)
+
 define compile_template
 $(1).riscv: $(wildcard $(src_dir)/$(1)/*) $(wildcard $(src_dir)/common/*)
 	$$(RISCV_GCC) $$(incs) $$(RISCV_GCC_OPTS) -o $$@ $$(LIST_OPTS) \
