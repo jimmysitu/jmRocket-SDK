@@ -15,7 +15,8 @@ src_dir = ..
 #--------------------------------------------------------------------
 
 tests = \
-	gcov-test \
+	test_gcc \
+
 
 #--------------------------------------------------------------------
 # Build rules
@@ -23,9 +24,9 @@ tests = \
 
 RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf-
 RISCV_GCC ?= $(RISCV_PREFIX)gcc
-RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -std=gnu99 -O2 -ffast-math -fno-common -fno-builtin-printf -g
-RISCV_LINK ?= $(RISCV_GCC) -T $(src_dir)/common/test.ld $(incs)
-RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles -lm -lgcc -T $(src_dir)/common/test_gcov.ld
+RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -mabi=lp64 -static -std=gnu99 -Os -ffast-math -fno-common -fno-builtin-printf -g
+RISCV_LINK ?= $(RISCV_GCC) -T $(src_dir)/test_gcc/test.ld $(incs)
+RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles -lm -lgcc -T $(src_dir)/test_gcc/test.ld
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump
 RISCV_OBJDUMP_OPTS ?= -D -S
 RISCV_SIM ?= spike --isa=rv$(XLEN)gc
@@ -34,11 +35,6 @@ incs  += -I$(src_dir)/../env -I$(src_dir)/common $(addprefix -I$(src_dir)/, $(te
 objs  :=
 
 LIST_OPTS ?= -g -Wa,-aslh
-
-GCOV_OPTS ?= -fprofile-arcs -ftest-coverage
-RISCV_GCC_OPTS  += $(GCOV_OPTS)
-RISCV_LINK_OPTS += $(GCOV_OPTS)
-
 define compile_template
 $(1).riscv: $(wildcard $(src_dir)/$(1)/*) $(wildcard $(src_dir)/common/*)
 	$$(RISCV_GCC) $$(incs) $$(RISCV_GCC_OPTS) -o $$@ $$(LIST_OPTS) \
@@ -46,8 +42,6 @@ $(1).riscv: $(wildcard $(src_dir)/$(1)/*) $(wildcard $(src_dir)/common/*)
 		$(wildcard $(src_dir)/$(1)/*.S) \
 		$(wildcard $(src_dir)/common/*.c) \
 		$(wildcard $(src_dir)/common/*.S) \
-		$(wildcard $(src_dir)/common/gcov_src/*.c) \
-		$(wildcard $(src_dir)/common/gcov_src/*.S) \
 		$$(RISCV_LINK_OPTS) > $$@.lst
 endef
 
