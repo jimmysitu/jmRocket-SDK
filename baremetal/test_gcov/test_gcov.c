@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "gcov-test.h"
+#include "test_gcov.h"
 
 void fun1(){
     int a = 1;
