@@ -6,6 +6,8 @@
 
 XLEN ?= 64
 
+COV ?= 1
+
 default: all
 
 src_dir = ..
@@ -23,22 +25,50 @@ tests = \
 
 RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf-
 RISCV_GCC ?= $(RISCV_PREFIX)gcc
+RISCV_LINK ?= $(RISCV_PREFIX)ld
+
 RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -std=gnu99 -O2 -ffast-math -fno-common -fno-builtin-printf -g
-RISCV_LINK ?= $(RISCV_GCC) -T $(src_dir)/common/test.ld $(incs)
-RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles -lm -lgcc -T $(src_dir)/common/test_gcov.ld
+RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles
+
+ifeq ($(COV), 1)
+GCOV_OPTS ?= -fprofile-arcs -ftest-coverage
+RISCV_GCC_OPTS += -c
+RISCV_LINK_OPTS += -T $(src_dir)/common/test_gcov.ld
+else
+RISCV_LINK_OPTS += -T $(src_dir)/common/test.ld
+endif
+
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump
 RISCV_OBJDUMP_OPTS ?= -D -S
 RISCV_SIM ?= spike --isa=rv$(XLEN)gc
 
 incs  += -I$(src_dir)/../env -I$(src_dir)/common $(addprefix -I$(src_dir)/, $(tests))
+ifeq ($(COV), 1)
+incs  += -I$(src_dir)/common/gcov_src
+endif
+
 objs  :=
 
 LIST_OPTS ?= -g -Wa,-aslh
 
-GCOV_OPTS ?= -fprofile-arcs -ftest-coverage
-RISCV_GCC_OPTS  += $(GCOV_OPTS)
-RISCV_LINK_OPTS += $(GCOV_OPTS)
+ifeq ($(COV), 1)
+define compile_template
+$(1).riscv: $(wildcard $(src_dir)/$(1)/*) $(wildcard $(src_dir)/common/*)
+	$$(RISCV_GCC) $$(incs) $$(RISCV_GCC_OPTS) $$(GCOV_OPTS) \
+		$(wildcard $(src_dir)/$(1)/*.c) \
+		$(wildcard $(src_dir)/$(1)/*.S) \
+		$(wildcard $(src_dir)/common/*.c) \
+		$(wildcard $(src_dir)/common/*.S)
+	
+	$$(RISCV_GCC) $$(incs) $$(RISCV_GCC_OPTS) \
+		$(wildcard $(src_dir)/common/gcov_src/*.c) \
+		$(wildcard $(src_dir)/common/gcov_src/*.S)
 
+	$$(RISCV_LINK) $$(RISCV_LINK_OPTS) *.o -Map=$$@.map -o $$@
+
+endef
+
+else
 define compile_template
 $(1).riscv: $(wildcard $(src_dir)/$(1)/*) $(wildcard $(src_dir)/common/*)
 	$$(RISCV_GCC) $$(incs) $$(RISCV_GCC_OPTS) -o $$@ $$(LIST_OPTS) \
@@ -49,7 +79,10 @@ $(1).riscv: $(wildcard $(src_dir)/$(1)/*) $(wildcard $(src_dir)/common/*)
 		$(wildcard $(src_dir)/common/gcov_src/*.c) \
 		$(wildcard $(src_dir)/common/gcov_src/*.S) \
 		$$(RISCV_LINK_OPTS) > $$@.lst
+
 endef
+
+endif
 
 $(foreach bmark,$(tests),$(eval $(call compile_template,$(bmark))))
 
@@ -84,6 +117,7 @@ all: riscv
 
 clean:
 	rm -rf $(objs) $(junk)
+	rm *.o
 	rm *.gcno
 	rm *.symb
 
