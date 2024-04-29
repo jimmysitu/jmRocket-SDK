@@ -31,7 +31,7 @@
  * if something goes wrong.
  *
  * Thanassis Tsiodras
- * Real-time Embedded Software Engineer 
+ * Real-time Embedded Software Engineer
  * System, Software and Technology Department
  * European Space Agency
  *
@@ -74,7 +74,10 @@ typedef unsigned int u32;
 /* You need to set the output buffer pointer to your memory block */
 /* Size used will depend on size and complexity of source code
  * that you have compiled for coverage. */
-static unsigned char *gcov_output_buffer = (unsigned char *)(0x42000000);
+extern unsigned char __gcov_start;
+extern unsigned char __gcov_end;
+
+static unsigned char *gcov_output_buffer = &__gcov_start;
 static gcov_unsigned_t gcov_output_index;
 #endif // GCOV_OPT_OUTPUT_BINARY_MEMORY
 
@@ -301,7 +304,7 @@ void __gcov_exit(void)
         /* add trailing null char */
         bf = '\0';
         (void)GCOV_WRITE_BYTE(file, bf);
-        
+
         /* write the data byte count */
         /* we don't know endianness, so use division for consistent MSB first */
         bf = (unsigned char)(bytesNeeded / 16777216);

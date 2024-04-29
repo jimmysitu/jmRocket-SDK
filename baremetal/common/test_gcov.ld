@@ -55,6 +55,12 @@ SECTIONS
     *(.sdata .sdata.* .gnu.linkonce.s.*)
   }
 
+  .gcov : {
+    PROVIDE (__gcov_start = .);
+    KEEP (*(.gcda))
+    PROVIDE (__gcov_end = .);
+  }
+
   /* bss segment */
   .sbss : {
     *(.sbss .sbss.* .gnu.linkonce.sb.*)
