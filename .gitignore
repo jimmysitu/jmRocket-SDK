@@ -1,0 +1,7 @@
+*.riscv.dump
+*.o
+*.hex
+*.bin
+*.lst
+*.symb
+
