@@ -32,7 +32,6 @@ RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles
 
 ifeq ($(COV), 1)
 GCOV_OPTS ?= -fprofile-arcs -ftest-coverage
-RISCV_GCC_OPTS += -c
 RISCV_LINK_OPTS += -T $(src_dir)/common/test_gcov.ld
 else
 RISCV_LINK_OPTS += -T $(src_dir)/common/test.ld
@@ -54,18 +53,17 @@ LIST_OPTS ?= -g -Wa,-aslh
 ifeq ($(COV), 1)
 define compile_template
 $(1).riscv: $(wildcard $(src_dir)/$(1)/*) $(wildcard $(src_dir)/common/*)
-	$$(RISCV_GCC) $$(incs) $$(RISCV_GCC_OPTS) $$(GCOV_OPTS) \
+	$$(RISCV_GCC) $$(incs) $$(RISCV_GCC_OPTS) $$(GCOV_OPTS) -c \
 		$(wildcard $(src_dir)/$(1)/*.c) \
 		$(wildcard $(src_dir)/$(1)/*.S) \
 		$(wildcard $(src_dir)/common/*.c) \
 		$(wildcard $(src_dir)/common/*.S)
 	
-	$$(RISCV_GCC) $$(incs) $$(RISCV_GCC_OPTS) \
+	$$(RISCV_GCC) $$(incs) $$(RISCV_GCC_OPTS) -c \
 		$(wildcard $(src_dir)/common/gcov_src/*.c) \
 		$(wildcard $(src_dir)/common/gcov_src/*.S)
 
 	$$(RISCV_LINK) $$(RISCV_LINK_OPTS) *.o -Map=$$@.map -o $$@
-
 endef
 
 else
