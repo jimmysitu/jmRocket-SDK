@@ -1,6 +1,5 @@
 #include "util.h"
 #include <stdint.h>
-#include "gcov_public.h"
 #include "test_gcov.h"
 
 void fun1(){
@@ -20,7 +19,6 @@ int main(){
 
     fun1();
     fun2(4);
-    __gcov_exit();
 
     return 0;
 }

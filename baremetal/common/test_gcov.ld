@@ -28,14 +28,14 @@ SECTIONS
 
   /* text: test code section */
   . = 0x80000000;
-  .text.init : { *(.text.init) }
+  .text.init : { *(.text.init) } > ram
 
   . = ALIGN(0x1000);
   .tohost : { *(.tohost) }
 
   .text : { 
     *(.text)
-  }
+  } > ram
 
   .ctors : {
     __ctor_list = . ;
@@ -47,26 +47,26 @@ SECTIONS
 
 
   /* data segment */
-  .data : { *(.data) }
+  .data : { *(.data) } > ram
 
   .sdata : {
     __global_pointer$ = . + 0x800;
     *(.srodata.cst16) *(.srodata.cst8) *(.srodata.cst4) *(.srodata.cst2) *(.srodata*)
     *(.sdata .sdata.* .gnu.linkonce.s.*)
-  }
+  } > ram
 
   .gcov : {
     PROVIDE (__gcov_start = .);
     KEEP (*(.gcda))
     PROVIDE (__gcov_end = .);
-  }
+  } > ram
 
   /* bss segment */
   .sbss : {
     *(.sbss .sbss.* .gnu.linkonce.sb.*)
     *(.scommon)
-  }
-  .bss : { *(.bss) }
+  } > ram
+  .bss : { *(.bss) } > ram
 
   /* thread-local data segment */
   .tdata :
@@ -75,12 +75,12 @@ SECTIONS
     *(.tdata.begin)
     *(.tdata)
     *(.tdata.end)
-  }
+  } > ram
   .tbss :
   {
     *(.tbss)
     *(.tbss.end)
-  }
+  } > ram
 
   /* End of uninitalized data segement */
   _end = .;

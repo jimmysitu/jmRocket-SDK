@@ -27,14 +27,14 @@ RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf-
 RISCV_GCC ?= $(RISCV_PREFIX)gcc
 RISCV_LINK ?= $(RISCV_PREFIX)ld
 
-RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -std=gnu99 -O2 -ffast-math -fno-common -fno-builtin-printf -g
-RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles
+RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -nostdlib -nostartfiles -std=gnu99 -O2 -ffast-math -fno-common -fno-builtin-printf -g
+RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles  
 
 ifeq ($(COV), 1)
-GCOV_OPTS ?= -fprofile-arcs -ftest-coverage
-RISCV_LINK_OPTS += -T $(src_dir)/common/test_gcov.ld
+GCOV_OPTS ?= --coverage -fprofile-info-section -ffunction-sections -flto
+RISCV_LINK_OPTS += --coverage -T $(src_dir)/common/test_gcov.ld
 else
-RISCV_LINK_OPTS += -T $(src_dir)/common/test.ld
+RISCV_LINK_OPTS += -T $(src_dir)/common/test.ld 
 endif
 
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump
@@ -42,9 +42,6 @@ RISCV_OBJDUMP_OPTS ?= -D -S
 RISCV_SIM ?= spike --isa=rv$(XLEN)gc
 
 incs  += -I$(src_dir)/../env -I$(src_dir)/common $(addprefix -I$(src_dir)/, $(tests))
-ifeq ($(COV), 1)
-incs  += -I$(src_dir)/common/gcov_src
-endif
 
 objs  :=
 
@@ -59,11 +56,7 @@ $(1).riscv: $(wildcard $(src_dir)/$(1)/*) $(wildcard $(src_dir)/common/*)
 		$(wildcard $(src_dir)/common/*.c) \
 		$(wildcard $(src_dir)/common/*.S)
 	
-	$$(RISCV_GCC) $$(incs) $$(RISCV_GCC_OPTS) -c \
-		$(wildcard $(src_dir)/common/gcov_src/*.c) \
-		$(wildcard $(src_dir)/common/gcov_src/*.S)
-
-	$$(RISCV_LINK) $$(RISCV_LINK_OPTS) *.o -Map=$$@.map -o $$@
+	$$(RISCV_GCC) $$(RISCV_LINK_OPTS) *.o -Wl,-Map=$$@.map -Wl,--gc-sections -o $$@
 endef
 
 else

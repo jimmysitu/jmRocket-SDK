@@ -14,6 +14,8 @@ $CC --coverage -fprofile-info-section -c app.c
 #objdump -h app.o
 if ! [ -f linkcmds ]; then
     ld --verbose | sed '1,/^===/d' | sed '/^===/d' > linkcmds
+
+# Add this section to linkcmds, right after .rodata
 #  .gcov_info      :
 #  {
 #    PROVIDE (__gcov_info_start = .);
