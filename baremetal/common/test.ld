@@ -34,6 +34,7 @@ SECTIONS
   . = ALIGN(0x1000);
   .tohost : { *(.tohost) } > ram
 
+  . = ALIGN(0x1000);
   .text : { *(.text) } > ram
 
   /* data segment */
@@ -55,15 +56,14 @@ SECTIONS
   /* thread-local data segment */
   .tdata :
   {
-    _tls_data = .;
-    *(.tdata.begin)
+    PROVIDE( _tdata_begin = . );
     *(.tdata)
-    *(.tdata.end)
+    PROVIDE( _tdata_end = . );
   } > ram
   .tbss :
   {
     *(.tbss)
-    *(.tbss.end)
+    PROVIDE( _tbss_end = . );
   } > ram
 
   /* End of uninitalized data segement */

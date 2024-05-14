@@ -32,6 +32,7 @@ RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles
 
 ifeq ($(COV), 1)
 GCOV_OPTS ?= --coverage -fprofile-info-section -ffunction-sections -flto
+
 RISCV_LINK_OPTS += --coverage -T $(src_dir)/common/test_gcov.ld
 else
 RISCV_LINK_OPTS += -T $(src_dir)/common/test.ld 
@@ -67,8 +68,6 @@ $(1).riscv: $(wildcard $(src_dir)/$(1)/*) $(wildcard $(src_dir)/common/*)
 		$(wildcard $(src_dir)/$(1)/*.S) \
 		$(wildcard $(src_dir)/common/*.c) \
 		$(wildcard $(src_dir)/common/*.S) \
-		$(wildcard $(src_dir)/common/gcov_src/*.c) \
-		$(wildcard $(src_dir)/common/gcov_src/*.S) \
 		$$(RISCV_LINK_OPTS) > $$@.lst
 
 endef

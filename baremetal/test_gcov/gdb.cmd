@@ -5,8 +5,7 @@ target remote localhost:3333
 load
 
 break main
-break __gcov_exit
-
-break test_gcov.c:25
+break fun1
+break fun2
 
 continue

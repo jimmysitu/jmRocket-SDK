@@ -55,12 +55,13 @@ SECTIONS
     *(.sdata .sdata.* .gnu.linkonce.s.*)
   } > ram
 
-  .gcov : {
-    PROVIDE (__gcov_start = .);
-    KEEP (*(.gcda))
-    PROVIDE (__gcov_end = .);
+  .gcov_info      :
+  {
+    PROVIDE (__gcov_info_start = .);
+    KEEP (*(.gcov_info))
+    PROVIDE (__gcov_info_end = .);
   } > ram
-
+  
   /* bss segment */
   .sbss : {
     *(.sbss .sbss.* .gnu.linkonce.sb.*)
