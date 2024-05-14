@@ -28,10 +28,10 @@ RISCV_GCC ?= $(RISCV_PREFIX)gcc
 RISCV_LINK ?= $(RISCV_PREFIX)ld
 
 RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -nostdlib -nostartfiles -std=gnu99 -O2 -ffast-math -fno-common -fno-builtin-printf -g
-RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles  
+RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles
 
 ifeq ($(COV), 1)
-GCOV_OPTS ?= --coverage -fprofile-info-section -ffunction-sections -flto
+GCOV_OPTS ?= --coverage -fprofile-info-section -ffunction-sections -fdata-sections -flto
 
 RISCV_LINK_OPTS += --coverage -T $(src_dir)/common/test_gcov.ld
 else

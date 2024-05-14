@@ -72,15 +72,15 @@ SECTIONS
   /* thread-local data segment */
   .tdata :
   {
-    _tls_data = .;
-    *(.tdata.begin)
+    PROVIDE( _tls_data = . );
+    PROVIDE( _tdata_begin = . );
     *(.tdata)
-    *(.tdata.end)
+    PROVIDE( _tdata_end = . );
   } > ram
   .tbss :
   {
     *(.tbss)
-    *(.tbss.end)
+    PROVIDE( _tbss_end = . );
   } > ram
 
   /* End of uninitalized data segement */
