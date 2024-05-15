@@ -73,6 +73,8 @@ int
 main (void)
 {
   application ();
+#ifdef GCOV_TEST
   dump_gcov_info ();
+#endif
   return 0;
 }
