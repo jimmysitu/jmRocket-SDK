@@ -1,4 +1,5 @@
 #include "util.h"
+#include <stdlib.h>
 #include <gcov.h>
 #include "test_gcov.h"
 
