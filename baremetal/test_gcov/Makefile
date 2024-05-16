@@ -27,7 +27,10 @@ RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf-
 RISCV_GCC ?= $(RISCV_PREFIX)gcc
 RISCV_LINK ?= $(RISCV_PREFIX)ld
 
-RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -O0 -ffast-math -fno-common -fno-builtin-printf -ffreestanding -g
+RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -O0 -ffast-math -fno-common \
+				  -fno-builtin-printf -ffreestanding -g #-fno-tree-loop-distribute-patterns -g \
+				  #-march=rv$(XLEN)imac_zicsr -mabi=lp64 -g
+
 RISCV_LINK_OPTS ?= -static -nostartfiles #-nostdlib
 
 ifeq ($(COV), 1)

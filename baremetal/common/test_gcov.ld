@@ -16,6 +16,8 @@ MEMORY
 
 SECTIONS
 {
+  /* text: test code section */
+  /*. = 0x80000000;*/
   /* Read-only sections, merged into text segment: */
   PROVIDE (__executable_start = SEGMENT_START("text-segment", ORIGIN(ram))); . = SEGMENT_START("text-segment", ORIGIN(ram)) + SIZEOF_HEADERS;
   .interp         : { *(.interp) }
@@ -59,8 +61,6 @@ SECTIONS
   }
   .plt            : { *(.plt) *(.iplt) }
   
-  /* text: test code section */
-  . = 0x80000000;
   .text.init : { *(.text.init) }
 
   . = ALIGN(0x1000);
