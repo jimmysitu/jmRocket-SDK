@@ -96,10 +96,9 @@ int __attribute__((weak)) main(int argc, char** argv)
 static void init_tls()
 {
   register void* thread_pointer asm("tp");
-  extern char _tls_data;
-  extern __thread char _tdata_begin, _tdata_end, _tbss_end;
+  extern char _tdata_begin, _tdata_end, _tbss_end;
   size_t tdata_size = &_tdata_end - &_tdata_begin;
-  memcpy(thread_pointer, &_tls_data, tdata_size);
+  memcpy(thread_pointer, &_tdata_begin, tdata_size);
   size_t tbss_size = &_tbss_end - &_tdata_end;
   memset(thread_pointer + tdata_size, 0, tbss_size);
 }
@@ -382,7 +381,21 @@ void* memcpy(void* dest, const void* src, size_t len)
   if ((((uintptr_t)dest | (uintptr_t)src | len) & (sizeof(uintptr_t)-1)) == 0) {
     const uintptr_t* s = src;
     uintptr_t *d = dest;
-    while (d < (uintptr_t*)(dest + len))
+    uintptr_t *end = dest + len;
+    while (d + 8 < end) {
+      uintptr_t reg[8] = {s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7]};
+      d[0] = reg[0];
+      d[1] = reg[1];
+      d[2] = reg[2];
+      d[3] = reg[3];
+      d[4] = reg[4];
+      d[5] = reg[5];
+      d[6] = reg[6];
+      d[7] = reg[7];
+      d += 8;
+      s += 8;
+    }
+    while (d < end)
       *d++ = *s++;
   } else {
     const char* s = src;

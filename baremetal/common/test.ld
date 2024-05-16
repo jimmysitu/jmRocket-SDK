@@ -56,7 +56,6 @@ SECTIONS
   /* thread-local data segment */
   .tdata :
   {
-    PROVIDE( _tls_data = . );
     PROVIDE( _tdata_begin = . );
     *(.tdata)
     PROVIDE( _tdata_end = . );

@@ -9,18 +9,24 @@
 extern const struct gcov_info *const __gcov_info_start[];
 extern const struct gcov_info *const __gcov_info_end[];
 
+extern uint8_t __gcda_start[];
+extern uint8_t __gcda_end[];
+
+
+#define GCDA_MAX_SIZE  2048
+
+
 /* This function shall produce a reliable in order byte stream to transfer the
    gcov information from the target to the host system.  */
 
 static void
 dump (const void *d, unsigned n, void *arg)
 {
-  (void)arg;
-  const unsigned char *c = d;
-  unsigned char buf[2];
-
-  for (unsigned i = 0; i < n; ++i)
-    fwrite (encode (c[i], buf), sizeof (buf), 1, stderr);
+  uint8_t *gcda_ptr = __gcda_start;
+  if (gcda_ptr <= __gcda_end){
+    memcpy(gcda_ptr, d, n);
+    gcda_ptr = gcda_ptr + n;
+  }
 }
 
 /* The filename is serialized to a gcfn data stream by the
@@ -60,7 +66,6 @@ dump_gcov_info (void)
   {
     void *arg = NULL;
     __gcov_info_to_gcda (*info, filename, dump, allocate, arg);
-    fputc ('\n', stderr);
     ++info;
   }
 }
