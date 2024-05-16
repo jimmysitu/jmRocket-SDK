@@ -26,7 +26,8 @@ tests = \
 
 RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf-
 RISCV_GCC ?= $(RISCV_PREFIX)gcc
-RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -std=gnu99 -O2 -ffast-math -fno-common -fno-builtin-printf -g
+RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -std=gnu99 -O2 -ffast-math -fno-common \
+					-fno-builtin-printf -fno-tree-loop-distribute-patterns -march=rv$(XLEN)gc -mabi=lp64
 RISCV_LINK ?= $(RISCV_GCC) -T $(src_dir)/common/test.ld $(incs)
 RISCV_LINK_OPTS ?= -static -nostdlib -nostartfiles -lm -lgcc -T $(src_dir)/common/test.ld
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump
@@ -80,6 +81,6 @@ all: riscv
 
 clean:
 	rm -rf $(objs) $(junk)
-	rm *.gcno
-	rm *.symb
+	-rm *.gcno *.gcda
+	-rm *.symb
 
