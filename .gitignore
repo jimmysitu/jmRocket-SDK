@@ -4,4 +4,9 @@
 *.bin
 *.lst
 *.symb
-
+*.gcda
+*.gcno
+*.txt
+*.riscv
+*.riscv.lst
+*.gcov
