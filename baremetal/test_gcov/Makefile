@@ -27,16 +27,16 @@ RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf-
 RISCV_GCC ?= $(RISCV_PREFIX)gcc
 RISCV_LINK ?= $(RISCV_PREFIX)ld
 
-RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -O0 -ffast-math -fno-common \
-				  -fno-builtin-printf -ffreestanding -g #-fno-tree-loop-distribute-patterns -g \
-				  #-march=rv$(XLEN)imac_zicsr -mabi=lp64 -g
+RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -O0 -g -ffast-math -fno-common \
+				  -fno-builtin-printf -ffreestanding  -fno-tree-loop-distribute-patterns \
+				  #-march=rv$(XLEN)imac_zicsr -mabi=lp64
 
 RISCV_LINK_OPTS ?= -static -nostartfiles #-nostdlib
 
 ifeq ($(COV), 1)
 GCOV_OPTS ?= --coverage -fprofile-info-section -ffunction-sections -fdata-sections #-flto
 
-RISCV_LINK_OPTS += --coverage -T $(src_dir)/common/test_gcov.ld
+RISCV_LINK_OPTS += --coverage -T $(src_dir)/test_gcov/test_gcov.ld
 else
 RISCV_LINK_OPTS += -T $(src_dir)/common/test.ld
 endif

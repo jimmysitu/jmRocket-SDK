@@ -22,7 +22,7 @@ extern uint8_t __gcda_end[];
 static void
 dump (const void *d, unsigned n, void *arg)
 {
-  uint8_t *gcda_ptr = __gcda_start;
+  static uint8_t *gcda_ptr = __gcda_start;
   if (gcda_ptr <= __gcda_end){
     memcpy(gcda_ptr, d, n);
     gcda_ptr = gcda_ptr + n;
@@ -93,5 +93,6 @@ int main(){
         acc = acc + fun2(i);
     }
 
+    dump_gcov_info();
     return 0;
 }
