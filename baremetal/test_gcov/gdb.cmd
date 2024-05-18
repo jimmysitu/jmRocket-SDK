@@ -9,6 +9,7 @@ break fun1
 #break fun2
 break dump_gcov_info
 break tohost_exit
+break exit
 
 break fread
 break free

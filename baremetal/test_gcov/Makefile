@@ -29,20 +29,27 @@ RISCV_LINK ?= $(RISCV_PREFIX)ld
 
 RISCV_GCC_OPTS ?= -DPREALLOCATE=1 -mcmodel=medany -static -O0 -g -ffast-math -fno-common \
 				  -fno-builtin-printf -ffreestanding  -fno-tree-loop-distribute-patterns \
-				  #-march=rv$(XLEN)imac_zicsr -mabi=lp64
+				  --specs=nano.specs \
+				  -march=rv$(XLEN)imac_zicsr -mabi=lp64
 
 RISCV_LINK_OPTS ?= -static -nostartfiles #-nostdlib
 
 ifeq ($(COV), 1)
 GCOV_OPTS ?= --coverage -fprofile-info-section -ffunction-sections -fdata-sections #-flto
 
-RISCV_LINK_OPTS += --coverage -T $(src_dir)/test_gcov/test_gcov.ld
+#RISCV_LINK_OPTS += --coverage -T $(src_dir)/test_gcov/test_gcov.default.ld \
+
+RISCV_LINK_OPTS += --coverage -T $(src_dir)/common/test_gcov.ld \
+				  --specs=nano.specs \
+				  -march=rv$(XLEN)imac_zicsr -mabi=lp64
 else
 RISCV_LINK_OPTS += -T $(src_dir)/common/test.ld
 endif
 
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump
 RISCV_OBJDUMP_OPTS ?= -D -S
+
+RISCV_SIZE ?= $(RISCV_PREFIX)size
 RISCV_SIM ?= spike --isa=rv$(XLEN)gc
 
 incs  += -I$(src_dir)/../env -I$(src_dir)/common $(addprefix -I$(src_dir)/, $(tests))
@@ -90,6 +97,7 @@ tests_riscv_lst  = $(addsuffix .riscv.lst,  $(tests))
 $(tests_riscv_dump): %.riscv.dump: %.riscv
 	$(RISCV_OBJDUMP) $(RISCV_OBJDUMP_OPTS) $< > $@
 	$(RISCV_OBJDUMP) -t $< > $<.symb
+	$(RISCV_SIZE) $<
 
 $(tests_riscv_out): %.riscv.out: %.riscv
 	$(RISCV_SIM) $< > $@

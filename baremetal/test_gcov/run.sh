@@ -22,7 +22,7 @@ cleanup() {
 trap 'cleanup' SIGINT
 
 # Run spike in the background as usual
-spike --rbb-port=9824 -m0x80000000:0x40000 ../dummy.riscv &
+spike --rbb-port=9824 -m0x80000000:0x10000 ../dummy.riscv &
 pid1=$!
 
 sleep 1
