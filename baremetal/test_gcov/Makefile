@@ -120,5 +120,7 @@ clean:
 	rm -rf $(objs) $(junk)
 	rm *.o
 	rm *.gcno
+	rm *.gcda
+	rm *.gcov
 	rm *.symb
 
