@@ -7,6 +7,8 @@ cat gcov-stream.bin | riscv64-unknown-elf-gcov-tool merge-stream
 
 lcov -d . -o test_gcov.info -b . -c \
     --rc lcov_branch_coverage=1 \
+    --exclude tutorial/*.gcda \
+    --exclude tutorial/*.gcno \
     --gcov-tool /opt/riscv/bin/riscv64-unknown-elf-gcov
 
 genhtml -rc genhtml_branch_coverage=1 test_gcov.info -o cov_result
